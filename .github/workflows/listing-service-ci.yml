@@ -1,0 +1,29 @@
+name: listing-service-ci
+
+on:
+  push:
+    paths:
+      - 'estatex/listing_service/**'
+      - '.github/workflows/listing-service-ci.yml'
+  pull_request:
+    paths:
+      - 'estatex/listing_service/**'
+      - '.github/workflows/listing-service-ci.yml'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: estatex/listing_service
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+      - name: Run migrations
+        run: python manage.py migrate
+      - name: Run tests
+        run: python manage.py test
