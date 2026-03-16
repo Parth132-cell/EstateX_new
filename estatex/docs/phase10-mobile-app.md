@@ -25,8 +25,13 @@
 - `lib/features/*/presentation/screens` for screen-level UI + interactions
 - `lib/shared/widgets` for common scaffold and navigation drawer
 
+## Backend connectivity added
+- Added an HTTP `ApiClient` with JSON helpers and timeout/error handling.
+- Added `EstateXRepository` to consume listings, negotiation, payments, and video-tour APIs.
+- Updated app state to load listings/history from backend with offline fallback for resiliency.
+
 ## Next implementation steps
-- Replace in-memory app state with repository/data layer calls to backend microservices.
 - Add secure token persistence and refresh handling.
+- Replace placeholder user IDs with authenticated principals from auth tokens.
 - Integrate production SDKs (WebRTC, payment provider, e-sign callbacks).
 - Add widget/integration tests for each core user journey.

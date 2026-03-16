@@ -34,7 +34,10 @@ class _KycUploadScreenState extends State<KycUploadScreen> {
           ),
           const SizedBox(height: 16),
           FilledButton(
-            onPressed: () => appState.submitKyc(),
+            onPressed: () {
+              appState.submitKyc();
+              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('KYC submitted successfully.')));
+            },
             child: const Text('Submit KYC'),
           ),
           const SizedBox(height: 16),

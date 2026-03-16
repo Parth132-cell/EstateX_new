@@ -21,7 +21,7 @@ class VideoTourScreen extends StatelessWidget {
           Text('Tour status: $status'),
           const SizedBox(height: 12),
           FilledButton(
-            onPressed: () => appState.scheduleTour(listingId),
+            onPressed: () async => appState.scheduleTour(listingId),
             child: const Text('Schedule Tour'),
           ),
           const SizedBox(height: 8),

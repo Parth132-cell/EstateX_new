@@ -16,6 +16,14 @@ class _OfferNegotiationScreenState extends State<OfferNegotiationScreen> {
   final _offerController = TextEditingController();
 
   @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      AppStateScope.of(context).loadOfferHistory(widget.listingId);
+    });
+  }
+
+  @override
   void dispose() {
     _offerController.dispose();
     super.dispose();
@@ -41,16 +49,16 @@ class _OfferNegotiationScreenState extends State<OfferNegotiationScreen> {
             spacing: 8,
             children: [
               FilledButton(
-                onPressed: () {
+                onPressed: () async {
                   final amount = int.tryParse(_offerController.text);
-                  if (amount != null) appState.createOffer(widget.listingId, amount);
+                  if (amount != null) await appState.createOffer(widget.listingId, amount);
                 },
                 child: const Text('Make Offer'),
               ),
               OutlinedButton(
-                onPressed: () {
+                onPressed: () async {
                   final amount = int.tryParse(_offerController.text);
-                  if (amount != null) appState.createCounter(widget.listingId, amount);
+                  if (amount != null) await appState.createCounter(widget.listingId, amount);
                 },
                 child: const Text('Counter Offer'),
               ),
@@ -58,9 +66,11 @@ class _OfferNegotiationScreenState extends State<OfferNegotiationScreen> {
           ),
           const SizedBox(height: 12),
           Expanded(
-            child: ListView(
-              children: items.map((entry) => ListTile(title: Text(entry))).toList(),
-            ),
+            child: items.isEmpty
+                ? const Center(child: Text('No negotiation history yet.'))
+                : ListView(
+                    children: items.map((entry) => ListTile(title: Text(entry))).toList(),
+                  ),
           ),
         ],
       ),

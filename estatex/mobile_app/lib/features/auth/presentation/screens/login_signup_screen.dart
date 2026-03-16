@@ -48,8 +48,10 @@ class _LoginSignupScreenState extends State<LoginSignupScreen> {
           ),
           const SizedBox(height: 16),
           FilledButton(
-            onPressed: () {
+            onPressed: () async {
               appState.login(name: _nameController.text.trim(), role: _role);
+              await appState.loadListings();
+              if (!context.mounted) return;
               context.go('/feed');
             },
             child: const Text('Continue with OTP'),

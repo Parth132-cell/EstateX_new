@@ -16,4 +16,16 @@ class PropertyListing {
   final int bhk;
   final String description;
   final bool verified;
+
+  factory PropertyListing.fromJson(Map<String, dynamic> json) {
+    return PropertyListing(
+      id: json['id'] as int,
+      title: (json['title'] ?? '') as String,
+      city: (json['city'] ?? '') as String,
+      price: (json['price'] ?? 0) as int,
+      bhk: (json['bhk'] ?? 0) as int,
+      description: (json['description'] ?? '') as String,
+      verified: (json['verification_status'] ?? '') == 'verified' || (json['verified'] ?? false) == true,
+    );
+  }
 }

@@ -21,17 +21,17 @@ class EscrowPaymentScreen extends StatelessWidget {
           Text('Escrow status: $status'),
           const SizedBox(height: 12),
           FilledButton(
-            onPressed: () => appState.createOrder(listingId),
+            onPressed: () async => appState.createOrder(listingId),
             child: const Text('Create Order'),
           ),
           const SizedBox(height: 8),
           FilledButton.tonal(
-            onPressed: status == 'order_created' || status == 'funds_held' ? () => appState.holdFunds(listingId) : null,
+            onPressed: status == 'order_created' || status == 'funds_held' ? () async => appState.holdFunds(listingId) : null,
             child: const Text('Hold Funds'),
           ),
           const SizedBox(height: 8),
           FilledButton.tonal(
-            onPressed: status == 'funds_held' ? () => appState.releaseFunds(listingId) : null,
+            onPressed: status == 'funds_held' ? () async => appState.releaseFunds(listingId) : null,
             child: const Text('Release Funds'),
           ),
         ],

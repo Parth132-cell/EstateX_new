@@ -15,14 +15,17 @@ class _SearchFiltersScreenState extends State<SearchFiltersScreen> {
   late String _city;
   late double _maxPrice;
   int? _bhk;
+  bool _initialized = false;
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
+    if (_initialized) return;
     final state = AppStateScope.of(context);
     _city = state.cityFilter;
     _maxPrice = state.maxPriceFilter.toDouble();
     _bhk = state.bhkFilter;
+    _initialized = true;
   }
 
   @override
@@ -66,8 +69,9 @@ class _SearchFiltersScreenState extends State<SearchFiltersScreen> {
           ),
           const SizedBox(height: 20),
           FilledButton(
-            onPressed: () {
-              appState.applyFilters(city: _city, maxPrice: _maxPrice.round(), bhk: _bhk);
+            onPressed: () async {
+              await appState.applyFilters(city: _city, maxPrice: _maxPrice.round(), bhk: _bhk);
+              if (!context.mounted) return;
               context.go('/feed');
             },
             child: const Text('Apply Filters'),
