@@ -5,7 +5,7 @@ from django.utils import timezone
 from rest_framework import status
 from rest_framework.test import APITestCase
 
-from .models import NegotiationHistory, PropertyListing, Transaction, VerificationRecord
+from .models import Dispute, NegotiationHistory, PropertyListing, Transaction, VerificationRecord
 
 
 class PropertyListingAPITests(APITestCase):
@@ -317,3 +317,36 @@ class PropertyListingAPITests(APITestCase):
         self.assertEqual(detail.status_code, status.HTTP_200_OK)
         self.assertEqual(detail.data['status'], 'signed')
         self.assertIn('signed.pdf', detail.data['signed_pdf_url'])
+
+
+    def test_admin_verify_listing_and_resolve_dispute(self):
+        listing = PropertyListing.objects.create(**self.payload)
+        dispute = Dispute.objects.create(
+            listing=listing,
+            raised_by_user_id=501,
+            reason='Ownership mismatch concern',
+        )
+
+        verify_response = self.client.post(
+            reverse('admin-verify-listing'),
+            {'listing_id': listing.id, 'action': 'approve'},
+            format='json',
+        )
+        self.assertEqual(verify_response.status_code, status.HTTP_200_OK)
+        self.assertEqual(verify_response.data['verification_status'], PropertyListing.VerificationStatus.VERIFIED)
+
+        resolve_response = self.client.post(
+            reverse('admin-dispute-resolve'),
+            {'dispute_id': dispute.id, 'resolution_notes': 'Validated ownership docs and geo checks.'},
+            format='json',
+        )
+        self.assertEqual(resolve_response.status_code, status.HTTP_200_OK)
+        self.assertEqual(resolve_response.data['status'], Dispute.Status.RESOLVED)
+
+        users_response = self.client.get(reverse('admin-users'))
+        self.assertEqual(users_response.status_code, status.HTTP_200_OK)
+        self.assertGreaterEqual(users_response.data['count'], 1)
+
+        listings_response = self.client.get(reverse('admin-listings'))
+        self.assertEqual(listings_response.status_code, status.HTTP_200_OK)
+        self.assertGreaterEqual(listings_response.data['count'], 1)

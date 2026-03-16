@@ -20,17 +20,27 @@ class AppRouter {
       GoRoute(path: '/kyc', builder: (_, __) => const KycUploadScreen()),
       GoRoute(path: '/feed', builder: (_, __) => const PropertyFeedScreen()),
       GoRoute(
-          path: '/detail', builder: (_, __) => const PropertyDetailScreen()),
+        path: '/detail/:id',
+        builder: (_, state) => PropertyDetailScreen(listingId: int.parse(state.pathParameters['id']!)),
+      ),
+      GoRoute(path: '/filters', builder: (_, __) => const SearchFiltersScreen()),
       GoRoute(
-          path: '/filters', builder: (_, __) => const SearchFiltersScreen()),
-      GoRoute(path: '/tour', builder: (_, __) => const VideoTourScreen()),
+        path: '/tour/:id',
+        builder: (_, state) => VideoTourScreen(listingId: int.parse(state.pathParameters['id']!)),
+      ),
       GoRoute(
-          path: '/negotiation',
-          builder: (_, __) => const OfferNegotiationScreen()),
-      GoRoute(path: '/escrow', builder: (_, __) => const EscrowPaymentScreen()),
-      GoRoute(path: '/ar', builder: (_, __) => const ARInteriorPreviewScreen()),
+        path: '/negotiation/:id',
+        builder: (_, state) => OfferNegotiationScreen(listingId: int.parse(state.pathParameters['id']!)),
+      ),
       GoRoute(
-          path: '/broker', builder: (_, __) => const BrokerDashboardScreen()),
+        path: '/escrow/:id',
+        builder: (_, state) => EscrowPaymentScreen(listingId: int.parse(state.pathParameters['id']!)),
+      ),
+      GoRoute(
+        path: '/ar/:id',
+        builder: (_, state) => ARInteriorPreviewScreen(listingId: int.parse(state.pathParameters['id']!)),
+      ),
+      GoRoute(path: '/broker', builder: (_, __) => const BrokerDashboardScreen()),
     ],
     errorBuilder: (_, __) => const Scaffold(
       body: Center(child: Text('Route not found')),

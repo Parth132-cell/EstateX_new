@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from .models import Agreement, NegotiationHistory, PropertyListing, Transaction, VideoTour
+from .models import Agreement, Dispute, NegotiationHistory, PropertyListing, Transaction, VideoTour
 
 
 class PropertyListingSerializer(serializers.ModelSerializer):
@@ -162,4 +162,24 @@ class AgreementSerializer(serializers.ModelSerializer):
         fields = [
             'id', 'listing', 'buyer_id', 'seller_id', 'template_name', 'content', 'status',
             'esign_provider', 'esign_request_id', 'signed_pdf_url', 'created_at', 'updated_at'
+        ]
+
+
+
+class AdminVerifyListingSerializer(serializers.Serializer):
+    listing_id = serializers.IntegerField(min_value=1)
+    action = serializers.ChoiceField(choices=['approve', 'reject'])
+
+
+class AdminResolveDisputeSerializer(serializers.Serializer):
+    dispute_id = serializers.IntegerField(min_value=1)
+    resolution_notes = serializers.CharField(max_length=2000)
+
+
+class DisputeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Dispute
+        fields = [
+            'id', 'listing', 'raised_by_user_id', 'reason', 'resolution_notes',
+            'status', 'created_at', 'resolved_at'
         ]

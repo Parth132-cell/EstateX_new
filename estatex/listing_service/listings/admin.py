@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Agreement, NegotiationHistory, PropertyListing, Transaction, VerificationRecord, VideoTour
+from .models import Agreement, Dispute, NegotiationHistory, PropertyListing, Transaction, VerificationRecord, VideoTour
 
 
 @admin.register(PropertyListing)
@@ -52,3 +52,10 @@ class AgreementAdmin(admin.ModelAdmin):
     list_display = ('id', 'listing', 'buyer_id', 'seller_id', 'template_name', 'status', 'created_at')
     list_filter = ('status', 'created_at')
     search_fields = ('esign_request_id', 'template_name', 'listing__title')
+
+
+@admin.register(Dispute)
+class DisputeAdmin(admin.ModelAdmin):
+    list_display = ('id', 'listing', 'raised_by_user_id', 'status', 'created_at', 'resolved_at')
+    list_filter = ('status', 'created_at')
+    search_fields = ('reason', 'resolution_notes', 'listing__title')

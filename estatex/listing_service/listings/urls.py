@@ -2,6 +2,10 @@ from django.urls import path
 from rest_framework.routers import DefaultRouter
 
 from .views import (
+    AdminListingsAPIView,
+    AdminResolveDisputeAPIView,
+    AdminUsersAPIView,
+    AdminVerifyListingAPIView,
     AgreementDetailAPIView,
     AgreementGenerateAPIView,
     AgreementSendAPIView,
@@ -31,6 +35,10 @@ urlpatterns = [
     path('agreements/generate', AgreementGenerateAPIView.as_view(), name='agreement-generate'),
     path('agreements/send', AgreementSendAPIView.as_view(), name='agreement-send'),
     path('agreements/<int:agreement_id>', AgreementDetailAPIView.as_view(), name='agreement-detail'),
+    path('admin/users', AdminUsersAPIView.as_view(), name='admin-users'),
+    path('admin/listings', AdminListingsAPIView.as_view(), name='admin-listings'),
+    path('admin/verify-listing', AdminVerifyListingAPIView.as_view(), name='admin-verify-listing'),
+    path('admin/dispute/resolve', AdminResolveDisputeAPIView.as_view(), name='admin-dispute-resolve'),
 ]
 
 urlpatterns += router.urls

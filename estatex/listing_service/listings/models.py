@@ -137,3 +137,21 @@ class Agreement(models.Model):
 
     class Meta:
         ordering = ['-created_at']
+
+
+
+class Dispute(models.Model):
+    class Status(models.TextChoices):
+        OPEN = 'open', 'Open'
+        RESOLVED = 'resolved', 'Resolved'
+
+    listing = models.ForeignKey(PropertyListing, on_delete=models.CASCADE, related_name='disputes')
+    raised_by_user_id = models.BigIntegerField(db_index=True)
+    reason = models.TextField()
+    resolution_notes = models.TextField(blank=True, default='')
+    status = models.CharField(max_length=20, choices=Status.choices, default=Status.OPEN, db_index=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    resolved_at = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        ordering = ['-created_at']

@@ -14,7 +14,7 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from .models import Agreement, NegotiationHistory, PropertyListing, Transaction, VerificationRecord, VideoTour
+from .models import Agreement, Dispute, NegotiationHistory, PropertyListing, Transaction, VerificationRecord, VideoTour
 from .agreement import build_signed_pdf_url, generate_agreement_content, send_to_esign_provider
 from .negotiation import create_negotiation_entry, suggest_counter_offer
 from .payment import create_escrow_order, hold_escrow_funds, release_escrow_funds
@@ -22,6 +22,8 @@ from .serializers import (
     AgreementGenerateSerializer,
     AgreementSendSerializer,
     AgreementSerializer,
+    AdminResolveDisputeSerializer,
+    AdminVerifyListingSerializer,
     ListingSearchQuerySerializer,
     ListingVerificationRequestSerializer,
     NegotiationHistorySerializer,
@@ -453,3 +455,59 @@ class AgreementDetailAPIView(APIView):
             agreement.save(update_fields=['signed_pdf_url', 'status', 'updated_at'])
 
         return Response(AgreementSerializer(agreement).data, status=status.HTTP_200_OK)
+
+
+class AdminUsersAPIView(APIView):
+    def get(self, request):
+        user_ids = set()
+        user_ids.update(PropertyListing.objects.values_list('broker_id', flat=True))
+        user_ids.update(Transaction.objects.values_list('buyer_id', flat=True))
+        user_ids.update(Transaction.objects.values_list('seller_id', flat=True))
+        user_ids.update(Dispute.objects.values_list('raised_by_user_id', flat=True))
+
+        users = [{'id': uid, 'role': 'unknown'} for uid in sorted(user_ids)]
+        return Response({'count': len(users), 'results': users}, status=status.HTTP_200_OK)
+
+
+class AdminListingsAPIView(APIView):
+    def get(self, request):
+        queryset = PropertyListing.objects.all().order_by('-created_at')[:100]
+        payload = PropertyListingSerializer(queryset, many=True).data
+        return Response({'count': len(payload), 'results': payload}, status=status.HTTP_200_OK)
+
+
+class AdminVerifyListingAPIView(APIView):
+    def post(self, request):
+        serializer = AdminVerifyListingSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        payload = serializer.validated_data
+
+        listing = get_object_or_404(PropertyListing, id=payload['listing_id'])
+        if payload['action'] == 'approve':
+            listing.verification_status = PropertyListing.VerificationStatus.VERIFIED
+        else:
+            listing.verification_status = PropertyListing.VerificationStatus.REJECTED
+        listing.save(update_fields=['verification_status', 'updated_at'])
+
+        return Response(
+            {'listing_id': listing.id, 'verification_status': listing.verification_status},
+            status=status.HTTP_200_OK,
+        )
+
+
+class AdminResolveDisputeAPIView(APIView):
+    def post(self, request):
+        serializer = AdminResolveDisputeSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        payload = serializer.validated_data
+
+        dispute = get_object_or_404(Dispute, id=payload['dispute_id'])
+        dispute.resolution_notes = payload['resolution_notes']
+        dispute.status = Dispute.Status.RESOLVED
+        dispute.resolved_at = timezone.now()
+        dispute.save(update_fields=['resolution_notes', 'status', 'resolved_at'])
+
+        return Response(
+            {'dispute_id': dispute.id, 'status': dispute.status, 'resolved_at': dispute.resolved_at},
+            status=status.HTTP_200_OK,
+        )
