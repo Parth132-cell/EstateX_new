@@ -19,13 +19,18 @@ class AppRouter {
       GoRoute(path: '/auth', builder: (_, __) => const LoginSignupScreen()),
       GoRoute(path: '/kyc', builder: (_, __) => const KycUploadScreen()),
       GoRoute(path: '/feed', builder: (_, __) => const PropertyFeedScreen()),
-      GoRoute(path: '/detail', builder: (_, __) => const PropertyDetailScreen()),
-      GoRoute(path: '/filters', builder: (_, __) => const SearchFiltersScreen()),
+      GoRoute(
+          path: '/detail', builder: (_, __) => const PropertyDetailScreen()),
+      GoRoute(
+          path: '/filters', builder: (_, __) => const SearchFiltersScreen()),
       GoRoute(path: '/tour', builder: (_, __) => const VideoTourScreen()),
-      GoRoute(path: '/negotiation', builder: (_, __) => const OfferNegotiationScreen()),
+      GoRoute(
+          path: '/negotiation',
+          builder: (_, __) => const OfferNegotiationScreen()),
       GoRoute(path: '/escrow', builder: (_, __) => const EscrowPaymentScreen()),
       GoRoute(path: '/ar', builder: (_, __) => const ARInteriorPreviewScreen()),
-      GoRoute(path: '/broker', builder: (_, __) => const BrokerDashboardScreen()),
+      GoRoute(
+          path: '/broker', builder: (_, __) => const BrokerDashboardScreen()),
     ],
     errorBuilder: (_, __) => const Scaffold(
       body: Center(child: Text('Route not found')),
